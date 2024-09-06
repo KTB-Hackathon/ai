@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List
 import random
+import math
 
 from llm import get_ai_message
 from Recommend import main
@@ -48,10 +49,10 @@ async def recommend(reco: Reco):
     detailed_results = [
         [
             data.get("uri", ""),
-            data.get("road_nm", ""),
+            "" if pd.isna(data.get("road_nm", "")) else data.get("road_nm", ""),
             data.get("lotno", ""),
-            data.get("x", ""),
-            data.get("y", ""),
+            data.get("x", 0),  # x는 항상 존재한다고 가정
+            data.get("y", 0),  # y는 항상 존재한다고 가정
             data.get("area", ""),
             data.get("description", "")
         ]
