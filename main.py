@@ -11,7 +11,6 @@ class Message(BaseModel):
 @app.post("/message/", response_model=Message)
 def process_message(message: Message):
     try:
-        print(message.content)
         ai_response = get_ai_message(message.content)
         return {"content": ai_response}
     except Exception as e:
