@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         REPO = 'KTB-Hackathon/ai'
-        DOCKER_HUB_REPO = 'jonum12312/ktbhackai'  
+        DOCKER_HUB_REPO = 'jonum12312/hackai'  
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub' 
         PINECONE_API_KEY = credentials('PINECONE_API_KEY')
         UPSTAGE_API_KEY = credentials('UPSTAGE_API_KEY')
