@@ -17,8 +17,8 @@ class Message(BaseModel):
 
 MONGO_DETAILS = "mongodb://10.178.0.3"
 client = AsyncIOMotorClient(MONGO_DETAILS)
-db = "imagedb"
-collection = "image"
+db = client["imagedb"]  # 데이터베이스 객체 생성
+collection = db["image"]
 
 async def fetch_travel_data(area_name):
     """ MongoDB에서 주어진 지역 이름에 맞는 데이터를 조회합니다. """
@@ -44,6 +44,7 @@ async def recommend(reco: Reco):
         'TRAVEL_MISSION_INT': 3
     }
     result_list = main(traveler)  # 이 함수는 area 이름 리스트를 반환한다고 가정합니다.
+    print(result_list)
     detailed_results = [await fetch_travel_data(area) for area in result_list]
     return {"list": detailed_results}
 
