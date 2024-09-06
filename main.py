@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List
 import random
 import math
+import pandas as pd
 
 from llm import get_ai_message
 from Recommend import main
