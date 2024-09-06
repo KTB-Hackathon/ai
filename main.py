@@ -47,7 +47,7 @@ async def recommend(reco: Reco):
     detailed_results = [await fetch_travel_data(area) for area in result_list]
     return {"list": detailed_results}
 
-@app.post("/message/", response_model=Message)
+@app.post("/message/")
 def process_message(message: Message):
     try:
         places = ", ".join(f"\"{place}\"" for place in message.content)
