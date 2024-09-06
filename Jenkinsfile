@@ -7,6 +7,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub' 
         PINECONE_API_KEY = credentials('PINECONE_API_KEY')
         UPSTAGE_API_KEY = credentials('UPSTAGE_API_KEY')
+        OPENAI_API_KEY = credentials('OPENAI_API_KEY')
     }
 
     stages {
@@ -46,7 +47,7 @@ pipeline {
                     sh "docker pull ${DOCKER_HUB_REPO}:latest"
 
                     // 컨테이너 실행 (로컬 포트 80 -> 컨테이너 8080)
-                    sh "docker run -d --name ktbhackai -e PINECONE_API_KEY=${PINECONE_API_KEY} -e UPSTAGE_API_KEY=${UPSTAGE_API_KEY} -p 7777:80 ${DOCKER_HUB_REPO}:latest"
+                    sh "docker run -d --name ktbhackai -e OPENAI_API_KEY=${OPENAI_API_KEY} -e PINECONE_API_KEY=${PINECONE_API_KEY} -e UPSTAGE_API_KEY=${UPSTAGE_API_KEY} -p 7777:80 ${DOCKER_HUB_REPO}:latest"
                 }
             }
         }
