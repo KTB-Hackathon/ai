@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List
+import random
 
 from llm import get_ai_message
 from Recommend import main
@@ -19,11 +20,6 @@ MONGO_DETAILS = "mongodb://10.178.0.3"
 client = AsyncIOMotorClient(MONGO_DETAILS)
 db = client["imagedb"]  # 데이터베이스 객체 생성
 collection = db["image"]
-
-async def fetch_travel_data(area_name):
-    """ MongoDB에서 주어진 지역 이름에 맞는 데이터를 조회합니다. """
-    data = await collection.find_one({"area": area_name})
-    return data if data else {}
 
 
 @app.post("/recommend/")
@@ -43,9 +39,25 @@ async def recommend(reco: Reco):
         'TRAVEL_COMPANIONS_NUM': 0.0,
         'TRAVEL_MISSION_INT': 3
     }
-    result_list = main(traveler)  # 이 함수는 area 이름 리스트를 반환한다고 가정합니다.
-    print(result_list)
-    detailed_results = [await fetch_travel_data(area) for area in result_list]
+    
+    # MongoDB에서 89개의 데이터 중 랜덤으로 15개를 가져오는 쿼리
+    cursor = collection.aggregate([{"$sample": {"size": 15}}])
+    random_data = await cursor.to_list(length=15)
+    
+    # 각 문서에서 필요한 컬럼들을 리스트로 변환
+    detailed_results = [
+        [
+            data.get("uri", ""),
+            data.get("road_nm", ""),
+            data.get("lotno", ""),
+            data.get("x", ""),
+            data.get("y", ""),
+            data.get("area", ""),
+            data.get("description", "")
+        ]
+        for data in random_data
+    ]
+    
     return {"list": detailed_results}
 
 @app.post("/message/")
