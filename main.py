@@ -27,7 +27,7 @@ async def fetch_travel_data(area_name):
 
 
 @app.post("/recommend/")
-def recommend(reco: Reco):
+async def recommend(reco: Reco):
     traveler = {
         'GENDER': '남',
         'AGE_GRP': 20.0,
@@ -43,7 +43,9 @@ def recommend(reco: Reco):
         'TRAVEL_COMPANIONS_NUM': 0.0,
         'TRAVEL_MISSION_INT': 3
     }
-    return {"list" : main(traveler)}
+    result_list = main(traveler)  # 이 함수는 area 이름 리스트를 반환한다고 가정합니다.
+    detailed_results = [await fetch_travel_data(area) for area in result_list]
+    return {"list": detailed_results}
 
 @app.post("/message/", response_model=Message)
 def process_message(message: Message):
