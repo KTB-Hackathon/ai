@@ -49,9 +49,8 @@ async def recommend(reco: Reco):
     # 각 문서에서 필요한 컬럼들을 리스트로 변환
     detailed_results = [
         [
-            data.get("uri", ""),
+            "https://storage.cloud.google.com/journey_mate_image/"+data.get("uri", ""),
             "" if pd.isna(data.get("road_nm", "")) else data.get("road_nm", ""),
-            data.get("lotno", ""),
             data.get("x", 0),  # x는 항상 존재한다고 가정
             data.get("y", 0),  # y는 항상 존재한다고 가정
             data.get("area", ""),
