@@ -8,6 +8,8 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_openai import ChatOpenAI
+
 
 store = {}
 
@@ -23,7 +25,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 
 
 def get_llm():
-  llm = ChatUpstage()
+  llm = ChatOpenAI(model='gpt-4o')
   return llm
 
 def get_retriever():
@@ -37,16 +39,30 @@ def get_retriever():
 def get_dictionary_chain():
     
     dictionary = ["""
-                   
-                  
+          
+                      
                   """]
     llm = get_llm()
 
     prompt = ChatPromptTemplate.from_template(f"""
-        사용자의 질문을 보고, 우리의 사전을 참고해서 비슷한 양식으로
-        답변을 생성해주세요. 답변에 포함되어야할 내용은 다음과 같습니다. 
-        사전에 있는 내용과 같은 내용은 답변으로 제공하지 마세요.
+        한국어로 답변해주세요.
+        사용자의 질문을 보고, 사전을 참고하여 비슷한 양식으로 답변을 생성해주세요.
+        답변에 포함되어야할 내용은 다음과 같습니다. 
         답변으로 제공하는 여행지는 반드시 충청도 내 관광지 여야합니다.
+        사용자의 질문을 보고 세 곳의 관광지를 추천해주세요.
+        관광지 앞에 번호를 붙여 제공해주세요.
+        관광지 세개를 줄바꿈으로 제공해주세요.
+        관광지의 주소를 제공하세요.
+        관광지에 대한 설명도 제공해야합니다.
+        추천 관광지는 파이썬 테이블 형식으로 제공해야합니다.
+        관광지 이름, 주소, 설명으로 열이 분리되도록 합니다.                                
+                                              
+        관광코스 또한 제작하여 제공합니다. 
+        관광코스는 세개가 넘어도 됩니다.    
+        지금까지 선택한 관광지를 종합하여 관광코스를 제작하여 제공합니다.
+        최근에 선택한 관광지일 수록 나중에 방문합니다.
+        관광 코스에 포함되는 관광지는 모두 사용자의 질문에 포함된 관광지만으로 이루어집니다.                                                                                          
+                                
         사전: {dictionary}
         
         질문: {{question}}
@@ -66,6 +82,9 @@ def get_rag_chain():
     "formulate a standalone question which can be understood "
     "without the chat history. Do NOT answer the question, "
     "just reformulate it if needed and otherwise return it as is."
+    "다음 추천되는 세곳의 관광지는 모두 이전 선택관광지에서 30분 거리에 있어야합니다."
+    "입력된 관광지가 있다면, 다음 추천되는 곳까지 이동시간을 알려주세요."
+    "관광코스를 제공할때는, 히스토리에서 지금까지 선택한 관광지를 모두 포함하여 제공합니다."
   )
 
   contextualize_q_prompt = ChatPromptTemplate.from_messages(
@@ -84,8 +103,6 @@ def get_rag_chain():
     "You are an assistant for question-answering tasks. "
     "Use the following pieces of retrieved context to answer "
     "the question. If you don't know the answer, say that you "
-    "don't know. Use three sentences maximum and keep the "
-    "answer concise."
     "\n\n"
     "{context}"
   )
