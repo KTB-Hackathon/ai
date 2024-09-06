@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
+from motor.motor_asyncio import AsyncIOMotorClient
+from typing import List
 
 from llm import get_ai_message
 from Recommend import main
@@ -11,7 +13,17 @@ class Reco(BaseModel):
     TRAVEL_STYL_5: int
 
 class Message(BaseModel):
-    content: str
+    content: List[str]
+
+MONGO_DETAILS = "mongodb://10.178.0.3"
+client = AsyncIOMotorClient(MONGO_DETAILS)
+db = "imagedb"
+collection = "image"
+
+async def fetch_travel_data(area_name):
+    """ MongoDB에서 주어진 지역 이름에 맞는 데이터를 조회합니다. """
+    data = await collection.find_one({"area": area_name})
+    return data if data else {}
 
 
 @app.post("/recommend/")
@@ -36,9 +48,12 @@ def recommend(reco: Reco):
 @app.post("/message/", response_model=Message)
 def process_message(message: Message):
     try:
-        fake_res = "\"독립기념관\",\"국립청주 박물관\",\"성심당 롯데백화점 대전점\",\"대전 오월드\",\"성심당 케이크 부티크\" 이 여행지를 모두 포함한 관광코스를 작성해주세요."
-        # ai_response = get_ai_message(message.content)
-        ai_response = get_ai_message(fake_res)
+        places = ", ".join(f"\"{place}\"" for place in message.content)
+        tour_description = f"{places} 이 여행지를 모두 포함한 관광코스를 작성해주세요."
+        
+        ai_response = get_ai_message(tour_description)
+        
+        # 결과를 동일한 구조로 반환
         return {"content": ai_response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

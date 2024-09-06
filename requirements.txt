@@ -8,3 +8,5 @@ langchain_upstage
 langchain_pinecone
 langchain_community
 catboost
+motor
+typing
