@@ -3,9 +3,6 @@ from pydantic import BaseModel
 
 from llm import get_ai_message
 
-# from dotenv import load_dotenv
-# load_dotenv()  
-
 app = FastAPI()
 
 class Message(BaseModel):
@@ -14,7 +11,7 @@ class Message(BaseModel):
 @app.post("/message/", response_model=Message)
 def process_message(message: Message):
     try:
-        # AI 모델을 통해 메시지 처리
+        print(message.content)
         ai_response = get_ai_message(message.content)
         return {"content": ai_response}
     except Exception as e:
