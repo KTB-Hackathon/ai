@@ -11,9 +11,8 @@ class Message(BaseModel):
 @app.post("/message/", response_model=Message)
 def process_message(message: Message):
     try:
-        # AI 모델을 통해 메시지 처리
-        requestContent = message.content + "카이스트 맛집 추천"
-        ai_response = get_ai_message(requestContent)
+        print(message.content)
+        ai_response = get_ai_message(message.content)
         return {"content": ai_response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
