@@ -7,4 +7,4 @@ langchain_upstage
 langchain_pinecone
 langchain_community
 catboost
-sklearn.model_selection
+sklearn
