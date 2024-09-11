@@ -3,9 +3,9 @@ from sklearn.model_selection import train_test_split
 from catboost import CatBoostRegressor, Pool
 
 def load_data():
-    df_place = pd.read_csv('/content/tn_visit_area_info.csv')
-    df_travel = pd.read_csv('/content/tn_travel.csv')
-    df_traveler = pd.read_csv('/content/tn_traveller_master.csv')
+    df_place = pd.read_csv('./tn_visit_area_info.csv')
+    df_travel = pd.read_csv('./tn_travel.csv')
+    df_traveler = pd.read_csv('./tn_traveller_master.csv')
     return df_place, df_travel, df_traveler
 
 def merge_data(df_place, df_travel, df_traveler):
@@ -41,7 +41,7 @@ def create_model(train_data, test_data, categorical_features_names):
     train_pool = Pool(train_data.drop(['DGSTFN'], axis=1), label=train_data['DGSTFN'], cat_features=categorical_features_names)
     test_pool = Pool(test_data.drop(['DGSTFN'], axis=1), label=test_data['DGSTFN'], cat_features=categorical_features_names)
     model = CatBoostRegressor()
-    model.load_model('/content/catboost_model.cbm')
+    model.load_model('./catboost_model.cbm')
     return model, train_pool, test_pool
 
 def predict_areas(model, df_filter, traveler):
@@ -68,23 +68,3 @@ def main(traveler):
     model, train_pool, test_pool = create_model(train_data, test_data, categorical_features_names)
     results = predict_areas(model, df_filter, traveler)
     return get_top_20_areas(results)
-
-# 사용 예제
-traveler = {
-    'GENDER': '남',
-    'AGE_GRP': 20.0,
-    'TRAVEL_STYL_1': 1,
-    'TRAVEL_STYL_2': 2,
-    'TRAVEL_STYL_3': 2,
-    'TRAVEL_STYL_4': 3,
-    'TRAVEL_STYL_5': 2,
-    'TRAVEL_STYL_6': 2,
-    'TRAVEL_STYL_7': 2,
-    'TRAVEL_STYL_8': 2,
-    'TRAVEL_MOTIVE_1': 8,
-    'TRAVEL_COMPANIONS_NUM': 0.0,
-    'TRAVEL_MISSION_INT': 3
-}
-
-# main 함수 호출로 최종 결과를 JSON 형식으로 받기
-print(main(traveler))
